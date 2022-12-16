@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.25.2",
-    "eslint-config-custom": "*",
+    "@gluestack/test2": "*",
     "prettier": "latest",
     "turbo": "latest"
   },
