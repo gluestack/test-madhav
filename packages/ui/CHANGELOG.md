@@ -1,5 +1,11 @@
 # @gluestack/test
 
+## 0.0.6
+
+### Patch Changes
+
+- vbfosvsfjlbsd
+
 ## 0.0.5
 
 ### Patch Changes

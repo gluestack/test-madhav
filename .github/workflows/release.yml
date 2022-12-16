@@ -38,9 +38,12 @@ jobs:
       - name: Get published package version
         id: version
         run: |
+          UPDATESTORYBOOK=0
           for i in "${changeset_outputs_published_packages[@]}"
           do
             echo "$i"
+            PACKAGENAME=$(echo $i | jq '.[0].name')
+            echo "$PACKAGENAME"
           done
 
           VERSION=$(echo $changeset_outputs_published_packages | jq '.[0].version')
