@@ -38,12 +38,15 @@ jobs:
       - name: Get published package version
         id: version
         run: |
-          UPDATESTORYBOOK=0
           for row in $(echo "${array}" | jq -r '.[] | @base64'); do
               _jq() {
               echo ${row} | base64 --decode | jq -r ${1}
               }
-            echo $(_jq '.name')
+            PACKAGENAME=$(echo $(_jq '.name'))
+            if [ $PACKAGENAME = "@gluestack/test" ]
+            then
+              echo "::set-output name=updateStorybook::1"
+            fi
           done
 
           VERSION=$(echo $array | jq '.[0].version')
@@ -63,6 +66,6 @@ jobs:
           # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
           channel-id: "C04FG38TCDB"
           # For posting a simple plain text message
-          slack-message: "A new version of ${{ github.event.repository.name }} was published!\nPackage name:${{ steps.version.outputs.name }}\nVersion:${{ steps.version.outputs.version }}"
+          slack-message: "A new version of ${{ github.event.repository.name }} was published!\nPackage name:${{ steps.version.outputs.name }}\nVersion:${{ steps.version.outputs.version }}\nOutput:${{ steps.version.outputs.updateStorybook }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
