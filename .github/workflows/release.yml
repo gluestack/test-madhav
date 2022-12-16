@@ -42,11 +42,14 @@ jobs:
           NAME=$(echo $changeset_outputs_published_packages | jq '.[0].name')
           echo "::set-output name=version::$VERSION"
           echo "::set-output name=name::$NAME"
+
+          arraylength=${#changeset_outputs_published_packages[@]}
+          for (( i=0; i<${arraylength}; i++ ));
+          do
+            echo "index: $i, key: ${changeset_outputs_published_packages[$i].name}, value: ${changeset_outputs_published_packages[$i].version}"
+          done
         env:
           changeset_outputs_published_packages: ${{ steps.changesets.outputs.publishedPackages }}
-
-      - name: Test
-        run: echo ${{ steps.version.outputs.version }}
 
       - name: Post to a Slack channel
         id: slack
