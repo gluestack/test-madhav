@@ -1,4 +1,4 @@
-import { Button } from "ui";
+import { Button } from "@gluestack/test";
 
 export default function Docs() {
   return (
