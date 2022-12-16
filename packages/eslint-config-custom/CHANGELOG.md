@@ -1,5 +1,11 @@
 # @gluestack/test2
 
+## 0.0.4
+
+### Patch Changes
+
+- gfjsobgfslkng
+
 ## 0.0.3
 
 ### Patch Changes
