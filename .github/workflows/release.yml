@@ -35,6 +35,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Get published package version
+        id: version
+        run: |
+          VERSION=$(echo $changeset_outputs_published_packages | jq '.[0].version')
+          NAME=$(echo $changeset_outputs_published_packages | jq '.[0].name')
+          echo "::set-output name=version::$VERSION"
+          echo "::set-output name=name::$NAME"
+        env:
+          changeset_outputs_published_packages: ${{ steps.changesets.outputs.publishedPackages }}
+
+      - name: Test
+        run: echo ${{ steps.version.outputs.version }}
+
       - name: Post to a Slack channel
         id: slack
         if: steps.changesets.outputs.published == 'true'
@@ -45,6 +58,6 @@ jobs:
           # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
           channel-id: "C04FG38TCDB"
           # For posting a simple plain text message
-          slack-message: "A new version of ${{ github.event.repository.name }} was published!\n${{ toJSON(steps.changesets.outputs.publishedPackages) }}"
+          slack-message: "A new version of ${{ github.event.repository.name }} was published!\nPackage name:${{ steps.version.outputs.name }}\nVersion:${{ steps.version.outputs.version }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
