@@ -25,5 +25,5 @@ jobs:
           event_type: dispatch_ui_storybook
           message: |
             {
-              "version": "foo"
+              "version": steps.version.outputs.version
             }
