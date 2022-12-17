@@ -1,0 +1,29 @@
+name: Trigger Deploy
+
+on:
+  push:
+    branches:
+      - fix/workflow
+
+jobs:
+  build:
+    name: Dispatch to 'gluestack/ui-storybook'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get published package version
+        id: version
+        run: |
+          echo "::set-output name=version::0.0.1"
+
+      - name: Emit repository_dispatch
+        uses: mvasigh/dispatch-action@main
+        with:
+          # You should create a personal access token and store it in your repository
+          token: ${{ secrets.MY_GITHUB_TOKEN }}
+          repo: ui-storybook
+          owner: gluestack
+          event_type: dispatch_ui_storybook
+          message: |
+            {
+              "version": ${{ steps.version.outputs.version }}
+            }
