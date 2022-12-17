@@ -13,7 +13,7 @@ jobs:
       - name: Get published package version
         id: version
         run: |
-          echo "::set-output name=version::0.0.1"
+          echo "::set-output name=version::0.1.0-alpha.10"
 
       - name: Emit repository_dispatch
         uses: mvasigh/dispatch-action@main
