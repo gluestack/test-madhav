@@ -1,0 +1,12 @@
+name: Trigger Test
+
+on:
+  push:
+    tags:
+      - "@dank-style/storybook@*"
+
+jobs:
+  test-job:
+    steps:
+      - name: Trigger on tag Testing
+        run: echo 1
