@@ -6,7 +6,8 @@ on:
       - "@dank-style/storybook@*"
 
 jobs:
-  test-job:
+  test_job:
+    runs-on: ubuntu-latest
     steps:
-      - name: Trigger on tag Testing
-        run: echo 1
+      - name: Test tag trigger
+        run: echo "Chala"
