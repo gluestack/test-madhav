@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    # tags:
+    #   - "*"
+
+concurrency: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+
+jobs:
+  release:
+    name: Publish version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Install Dependencies
+        run: yarn
+
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          # This expects you to have a script called release which does a build for your packages and calls changeset publish
+          publish: yarn release
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Get published package version
+        id: version
+        run: |
+          for row in $(echo "${array}" | jq -r '.[] | @base64'); do
+              _jq() {
+              echo ${row} | base64 --decode | jq -r ${1}
+              }
+            PACKAGENAME=$(echo $(_jq '.name'))
+            if [ $PACKAGENAME = "@gluestack/test" ]
+            then
+              echo "::set-output name=updateStorybook::1"
+            fi
+          done
+
+          VERSION=$(echo $array | jq '.[0].version')
+          NAME=$(echo $array | jq '.[0].name')
+          echo "::set-output name=version::$VERSION"
+          echo "::set-output name=name::$NAME"
+        env:
+          array: ${{ steps.changesets.outputs.publishedPackages }}
+
+      - name: Post to a Slack channel
+        id: slack
+        if: steps.changesets.outputs.published == 'true'
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          # Slack channel id, channel name, or user id to post message.
+          # See also: https://api.slack.com/methods/chat.postMessage#channels
+          # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
+          channel-id: "C04FG38TCDB"
+          # For posting a simple plain text message
+          slack-message: "A new version of ${{ github.event.repository.name }} was published!\nPackage name:${{ steps.version.outputs.name }}\nVersion:${{ steps.version.outputs.version }}\nOutput:${{ steps.version.outputs.updateStorybook }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
